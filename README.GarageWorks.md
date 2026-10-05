@@ -14,16 +14,14 @@ Fork of [Xilinx/AVED](https://github.com/Xilinx/AVED) used as the FPGA backend f
 
 ## Flow
 ```bash
-# 1. GarageWorks: generate RTL (EmitVerilog with axiwrapper=bd) -> generated/<Top>/
-cp ~/garageworks/generated/<Top>/*.{v,sv,json} hw/amd_v80_gen5x8_25.1/src/rtl/garageworks/  # top module: wrapper
-# 2. build (Vivado/Vitis 2025.1 + bootgen in PATH)
+# 1. build (Vivado/Vitis 2025.1 + bootgen in PATH)
 make hw
-# 3. program + rescan PCIe (or flash via ami_tool), then
+# 2. program + rescan PCIe (or flash via ami_tool), then
 make sw
 eval $(make -s env)           # LD_LIBRARY_PATH, PYTHONPATH, PARAMFN
-# 4. run converted cocotb tests (conv_cocotb_to_fpga ... -> fpga_tb_*.py)
+# 3. run converted cocotb tests (conv_cocotb_to_fpga ... -> fpga_tb_*.py)
 ```
 
-## user_accel contract
+## garageworks top module
 Top module `wrapper` (`wrapper.v`) with ports `s_axi_aclk`, `s_axi_aresetn`, `S_AXI_*`
 (32-bit AXI4-Lite) — exactly what GarageWorks' `genAxiWrapper` emits. Only addr[19:0] is meaningful.
