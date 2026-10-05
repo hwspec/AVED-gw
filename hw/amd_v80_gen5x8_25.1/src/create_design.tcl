@@ -36,6 +36,9 @@ proc do_aved_create_design { } {
   set_property ip_repo_paths "${src_dir}/iprepo" [current_project]
   update_ip_catalog
 
+  # GarageWorks RTL (referenced as a module by the block design)
+  add_files -norecurse [glob ${src_dir}/rtl/garageworks/*.v ${src_dir}/rtl/garageworks/*.sv]
+
   # Create block diagram
   create_bd_design  ${bd_name}
   current_bd_design ${bd_name}

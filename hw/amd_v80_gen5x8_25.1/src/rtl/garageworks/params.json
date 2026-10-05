@@ -1,0 +1,9 @@
+{
+  "soft_reset_rw": 0,
+  "const1_r": 16,
+  "const2_r": 32,
+  "dut_rw": 48,
+  "const1": 3735928559,
+  "const2": 443572857,
+  "reset_cycles": 8
+}

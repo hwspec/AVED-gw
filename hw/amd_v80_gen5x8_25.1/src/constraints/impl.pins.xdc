@@ -268,8 +268,6 @@ set_property -dict { PACKAGE_PIN N19                                            
 set_property -dict { PACKAGE_PIN N38                                                  } [get_ports "hbm_ref_clk_1_clk_p"]   ;# Bank 801 " C4CCIO_PAD1_1_801
 set_property -dict { PACKAGE_PIN N37                                                  } [get_ports "hbm_ref_clk_1_clk_n"]   ;# Bank 801 " C4CCIO_PAD1_1_801
 
-set_property -dict { PACKAGE_PIN CG6     IOSTANDARD LVCMOS12    SLEW SLOW   DRIVE 8   } [get_ports "smbus_0_scl_io"]        ;# Bank 702 VCCO - VR_1V2_VCCO_DDR4
-set_property -dict { PACKAGE_PIN CH7     IOSTANDARD LVCMOS12    SLEW SLOW   DRIVE 8   } [get_ports "smbus_0_sda_io"]        ;# Bank 702 VCCO - VR_1V2_VCCO_DDR4
 
 # Uncomment below qsfp and mcio pins as design requires
 # set_property -dict { PACKAGE_PIN AR51                                                 } [get_ports "qsfp0_322mhz_clk_p"]    ;# Bank 209 " GTM_REFCLKP0_209

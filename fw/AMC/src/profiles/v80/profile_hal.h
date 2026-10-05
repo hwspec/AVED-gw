@@ -23,7 +23,14 @@
 #define HAL_EMMC_BLOCK_SIZE             ( 512 )
 #define HAL_EMMC_MAX_BLOCKS             ( 0x7690000 )   /* 64 GBytes / 512 Bytes */
 
+/* SMBus IP is optional (removed in the GarageWorks build) */
+#ifdef XPAR_SMBUS_0_BASEADDR
+#define HAL_SMBUS_FEATURE               ( 1 )
 #define HAL_SMBUS_BASE_ADDR             ( XPAR_SMBUS_0_BASEADDR )
+#else
+#define HAL_SMBUS_FEATURE               ( 0 )
+#define HAL_SMBUS_BASE_ADDR             ( 0 )
+#endif
 #define HAL_SMBUS_ADDR                  ( 0x18 )
 #define HAL_SMBUS_INTERRUPT             ( 85U + 32U)	/* pl.dtsi base_logic_axi_smbus_rpu: smbus@80044000 { interrupts = < 0 85 4 > */
 

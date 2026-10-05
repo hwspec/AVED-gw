@@ -258,6 +258,7 @@ static FW_IF_MUXED_DEVICE_INIT_CFG myQsfpIf =
     HAL_I2C_BUS_1_DEVICE_ID
 };
 
+#if ( 1 == HAL_SMBUS_FEATURE )
 static FW_IF_SMBUS_INIT_CFG mySMBusIf =
 {
     HAL_SMBUS_BASE_ADDR,
@@ -289,6 +290,7 @@ static FW_IF_SMBUS_INIT_CFG mySMBusIf =
         FW_IF_SMBUS_COMMAND_CODE_NONE
     }
 };
+#endif
 
 
 /******************************************************************************/
@@ -528,6 +530,7 @@ int iFAL_Initialise( uint64_t *pullAmcInitStatus )
             iStatus = ERROR;
         }
 
+#if ( 1 == HAL_SMBUS_FEATURE )
         /* Init the SMBus FAL */
         if( FW_IF_ERRORS_NONE == ulFW_IF_SMBUS_Init( &mySMBusIf ) )
         {
@@ -539,6 +542,9 @@ int iFAL_Initialise( uint64_t *pullAmcInitStatus )
             PLL_ERR( FAL_PROFILE_NAME, "Error initialising SMBus FAL\r\n" );
             iStatus = ERROR;
         }
+#else
+        PLL_LOG( FAL_PROFILE_NAME, "SMBus IP not present - SMBus/BMC disabled\r\n" );
+#endif
 
         if( AMC_CFG_MUXED_DEVICE_FAL_INITIALISED == ( *pullAmcInitStatus & AMC_CFG_MUXED_DEVICE_FAL_INITIALISED ) )
         {

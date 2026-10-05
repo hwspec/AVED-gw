@@ -6,6 +6,7 @@
 AR := ar -rc
 
 TARGET := libami.a
+SHAREDTARGET := libami.so
 BUILD_DIR := ./build
 SRC_DIRS := ./src  # Private source/headers
 
@@ -23,15 +24,16 @@ INC_FLAGS := $(addprefix -I,$(INC_DIRS))
 
 # The -MMD and -MP flags together generate Makefiles for us.
 # These files will have .d instead of .o as the output.
-CFLAGS := $(INC_FLAGS) -MMD -MP -Wall -Werror
+CFLAGS := $(INC_FLAGS) -MMD -MP -Wall -Werror -fPIC
 
 #
 # Default make
 #
 all:
 	@$(MAKE) -s banner
-	../scripts/getVersion.sh ami $(realpath .)
+	bash ../scripts/getVersion.sh ami $(realpath .)
 	@$(MAKE) -s $(BUILD_DIR)/$(TARGET)
+	@$(MAKE) -s $(BUILD_DIR)/$(SHAREDTARGET)
 
 #
 # Prints new line.
@@ -59,6 +61,9 @@ $(BUILD_DIR)/$(TARGET): $(OBJS)
 	$(AR) $@ $^
 	@echo "Done\n"
 	@$(MAKE) -s newline
+
+$(BUILD_DIR)/$(SHAREDTARGET): $(OBJS)
+	gcc -shared -o $@ $^
 
 # Build step for C source.
 $(BUILD_DIR)/%.c.o: %.c
