@@ -45,3 +45,10 @@ IDE.log
 
 # Others
 .nfs*
+
+
+
+fw/AMC/build/
+hw/amd_v80_gen5x8_25.1/amd_v80_gen5x8_25.1.pdi
+hw/amd_v80_gen5x8_25.1/build/
+sw/vamp/build/

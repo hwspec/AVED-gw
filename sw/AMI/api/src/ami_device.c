@@ -299,8 +299,23 @@ int ami_open_cdev(ami_device *dev)
 	if (dev->cdev != AMI_INVALID_FD)
 		return AMI_STATUS_OK;  /* Device already opened */
 
-	snprintf(path, AMI_DEV_NAME_MAX, AMI_DEV, dev->cdev_num);
-	fd = open(path, O_RDWR | O_NONBLOCK);
+	/*
+	 * Newer AMI drivers create a per-device node named by BDF
+	 * (/dev/ami-bdf-BB:DD.F) plus a driver-wide /dev/ami0, so try the BDF
+	 * node first and fall back to the legacy /dev/ami<N>.
+	 */
+	{
+		char bdf_path[32] = { 0 };
+
+		snprintf(bdf_path, sizeof(bdf_path), "/dev/ami-bdf-%02x:%02x.%x",
+			AMI_PCI_BUS(dev->bdf), AMI_PCI_DEV(dev->bdf), AMI_PCI_FUNC(dev->bdf));
+		fd = open(bdf_path, O_RDWR | O_NONBLOCK);
+	}
+
+	if (fd == AMI_INVALID_FD) {
+		snprintf(path, AMI_DEV_NAME_MAX, AMI_DEV, dev->cdev_num);
+		fd = open(path, O_RDWR | O_NONBLOCK);
+	}
 
 	if (fd != AMI_INVALID_FD) {
 		dev->cdev = fd;
