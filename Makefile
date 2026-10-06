@@ -7,6 +7,7 @@ help:
 	@echo "make hw      - Vivado + AMC FW + PDI (hw/.../build_all.sh)"
 	@echo "make prog    - JTAG-program the V80 (no-FPT PDI)"
 	@echo "make sw      - build libami + libvamp/pyaved"
+	@echo "make timing  - timing report from the routed checkpoint"
 	@echo "make uuid    - show logic UUID from the last hw build"
 	@echo "make env     - print env exports for garageworks FPGA runs"
 
@@ -20,6 +21,9 @@ sw:
 	$(MAKE) -C sw/AMI/api
 	$(MAKE) -C sw/vamp
 
+timing:
+	vivado -mode batch -nojournal -nolog -source timing_v80.tcl
+
 uuid:
 	@grep -i logic-uuid $(HW_DIR)/build/vivado.log
 
@@ -28,4 +32,4 @@ env:
 	@echo "export PYTHONPATH=$(CURDIR)/sw/vamp/build:\$$PYTHONPATH"
 	@echo "export PARAMFN=$(CURDIR)/$$(ls $(HW_DIR)/src/rtl/garageworks/*.json | head -1)"
 
-.PHONY: help hw prog sw uuid env
+.PHONY: help hw prog sw timing uuid env
