@@ -3,6 +3,9 @@
  * ami_device.c - This file contains the implementation of device related logic
  * 
  * Copyright (c) 2023-present Advanced Micro Devices, Inc. All rights reserved.
+ *
+ * Modified 2026 for AVED-gw: ami_open_cdev() tries the per-device
+ * /dev/ami-bdf-BB:DD.F node first, then the legacy /dev/ami<N>.
  */
 
 /*****************************************************************************/

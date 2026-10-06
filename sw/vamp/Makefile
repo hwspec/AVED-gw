@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Kazutomo Yoshii
 # VAMP: libvamp.so (C), vamp.hpp (C++ header-only), pyaved.py. Requires sw/AMI/api (libami.so).
 AMI_API := ../AMI/api
 BUILD   := build

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Kazutomo Yoshii
 /*
  * vamp.h - VAMP: V80 AMI Minimal Primitives (C API)
  *

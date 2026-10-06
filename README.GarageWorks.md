@@ -25,3 +25,9 @@ eval $(make -s env)           # LD_LIBRARY_PATH, PYTHONPATH, PARAMFN
 ## garageworks top module
 Top module `wrapper` (`wrapper.v`) with ports `s_axi_aclk`, `s_axi_aresetn`, `S_AXI_*`
 (32-bit AXI4-Lite) — exactly what GarageWorks' `genAxiWrapper` emits. Only addr[19:0] is meaningful.
+
+## License
+New AVED-gw files are MIT (see `LICENSE`). Upstream AVED files keep their own
+headers: MIT for most of the tree, GPL-2.0-only for `sw/AMI/`. The default
+design in `hw/amd_v80_gen5x8_25.1/src/rtl/garageworks/` comes from GarageWorks
+(BSD-3-Clause, UChicago Argonne, LLC; see `NOTICE` there).

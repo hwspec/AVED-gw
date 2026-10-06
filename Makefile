@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Kazutomo Yoshii
 # GarageWorks-compatible AVED (V80, Vivado 2025.1, no SMBus IP)
 HW_DIR  := hw/amd_v80_gen5x8_25.1
 

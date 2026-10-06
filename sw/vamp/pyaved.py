@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Kazutomo Yoshii
 # pyaved - ctypes binding for libvamp.so (API used by garageworks' AVED_Bridge)
 import ctypes as C
 

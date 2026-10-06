@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Kazutomo Yoshii
 # program_v80.tcl - JTAG-program the V80 with the no-FPT PDI
 #   vivado -mode batch -source program_v80.tcl [-tclargs <pdi>]
 set SCRIPT_DIR [file dirname [file normalize [info script]]]

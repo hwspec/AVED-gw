@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Kazutomo Yoshii
 /*
  * vamp.hpp - C++ wrapper for VAMP (header-only, RAII)
  *
