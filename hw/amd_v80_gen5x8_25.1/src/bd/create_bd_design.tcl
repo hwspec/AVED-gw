@@ -262,11 +262,18 @@ proc create_hier_cell_clock_reset { parentCell nameHier } {
   set_property CONFIG.C_EXT_RST_WIDTH {1} $pl_psr
 
 
+  # GarageWorks user_accel clock (clk_usr_0), MHz; override with GW_CLK_MHZ
+  set gw_clk_mhz 100
+  if {[info exists ::env(GW_CLK_MHZ)] && $::env(GW_CLK_MHZ) ne ""} {
+    set gw_clk_mhz $::env(GW_CLK_MHZ)
+  }
+  common::send_gid_msg -ssname BD::TCL -id 2100 -severity "INFO" "GarageWorks user_accel clock: ${gw_clk_mhz} MHz"
+
   # Create instance: usr_clk_wiz, and set properties
   set usr_clk_wiz [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wizard usr_clk_wiz ]
   set_property -dict [list \
-    CONFIG.CLKOUT_DRIVES {No_buffer,No_buffer} \
-    CONFIG.CLKOUT_REQUESTED_OUT_FREQUENCY {300,500} \
+    CONFIG.CLKOUT_DRIVES {BUFG,No_buffer} \
+    CONFIG.CLKOUT_REQUESTED_OUT_FREQUENCY "${gw_clk_mhz},500" \
     CONFIG.CLKOUT_USED {true,true} \
     CONFIG.PRIM_SOURCE {No_buffer} \
     CONFIG.USE_DYN_RECONFIG {false} \
@@ -604,8 +611,15 @@ proc create_root_design { parentCell } {
   # Create instance: user_accel (GarageWorks AXI4-Lite user logic, RTL module reference)
   # RTL sources live in src/rtl/garageworks/ (populated by GarageWorks copysrcto.sh).
   set user_accel [ create_bd_cell -type module -reference wrapper user_accel ]
-  catch { set_property CONFIG.ASSOCIATED_BUSIF {S_AXI} [get_bd_pins user_accel/s_axi_aclk] }
-  catch { set_property CONFIG.ASSOCIATED_RESET {s_axi_aresetn} [get_bd_pins user_accel/s_axi_aclk] }
+
+  # Create instance: user_accel_sc (clock crossing clk_pl -> clk_usr_0;
+  # axi_clock_converter is not supported on Versal, SmartConnect does the CDC)
+  set user_accel_sc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect user_accel_sc ]
+  set_property -dict [list \
+    CONFIG.NUM_CLKS {2} \
+    CONFIG.NUM_MI {1} \
+    CONFIG.NUM_SI {1} \
+  ] $user_accel_sc
 
   # Create instance: cips, and set properties
   set cips [ create_bd_cell -type ip -vlnv xilinx.com:ip:versal_cips cips ]
@@ -991,7 +1005,8 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net axi_noc_mc_ddr4_0_CH0_DDR4_0 [get_bd_intf_pins axi_noc_mc_ddr4_0/CH0_DDR4_0] [get_bd_intf_ports CH0_DDR4_0_0]
   connect_bd_intf_net -intf_net axi_noc_mc_ddr4_1_CH0_DDR4_0 [get_bd_intf_pins axi_noc_mc_ddr4_1/CH0_DDR4_0] [get_bd_intf_ports CH0_DDR4_0_1]
   connect_bd_intf_net -intf_net base_logic_m_axi_pcie_mgmt_pdi_reset [get_bd_intf_pins base_logic/m_axi_pcie_mgmt_pdi_reset] [get_bd_intf_pins clock_reset/s_axi_pcie_mgmt_pdi_reset]
-  connect_bd_intf_net -intf_net base_logic_m_axi_user_accel [get_bd_intf_pins base_logic/m_axi_user_accel] [get_bd_intf_pins user_accel/S_AXI]
+  connect_bd_intf_net -intf_net base_logic_m_axi_user_accel [get_bd_intf_pins base_logic/m_axi_user_accel] [get_bd_intf_pins user_accel_sc/S00_AXI]
+  connect_bd_intf_net -intf_net user_accel_sc_M00_AXI [get_bd_intf_pins user_accel_sc/M00_AXI] [get_bd_intf_pins user_accel/S_AXI]
   connect_bd_intf_net -intf_net cips_CPM_PCIE_NOC_0 [get_bd_intf_pins cips/CPM_PCIE_NOC_0] [get_bd_intf_pins axi_noc_cips/S00_AXI]
   connect_bd_intf_net -intf_net cips_CPM_PCIE_NOC_1 [get_bd_intf_pins cips/CPM_PCIE_NOC_1] [get_bd_intf_pins axi_noc_cips/S01_AXI]
   connect_bd_intf_net -intf_net cips_LPD_AXI_NOC_0 [get_bd_intf_pins cips/LPD_AXI_NOC_0] [get_bd_intf_pins axi_noc_cips/S03_AXI]
@@ -1022,7 +1037,7 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_noc_mc_ddr4_1/aclk0] \
   [get_bd_pins base_logic/clk_pl] \
   [get_bd_pins clock_reset/clk_pl] \
-  [get_bd_pins user_accel/s_axi_aclk]
+  [get_bd_pins user_accel_sc/aclk]
   connect_bd_net -net cips_pl0_resetn  [get_bd_pins cips/pl0_resetn] \
   [get_bd_pins clock_reset/resetn_pl_axi]
   connect_bd_net -net cips_pl1_ref_clk  [get_bd_pins cips/pl1_ref_clk] \
@@ -1038,9 +1053,14 @@ proc create_root_design { parentCell } {
   connect_bd_net -net clock_reset_resetn_pcie_periph  [get_bd_pins clock_reset/resetn_pcie_periph] \
   [get_bd_pins base_logic/resetn_pcie_periph]
   connect_bd_net -net clock_reset_resetn_pl_ic  [get_bd_pins clock_reset/resetn_pl_ic] \
-  [get_bd_pins base_logic/resetn_pl_ic]
+  [get_bd_pins base_logic/resetn_pl_ic] \
+  [get_bd_pins user_accel_sc/aresetn]
   connect_bd_net -net clock_reset_resetn_pl_periph  [get_bd_pins clock_reset/resetn_pl_periph] \
-  [get_bd_pins base_logic/resetn_pl_periph] \
+  [get_bd_pins base_logic/resetn_pl_periph]
+  connect_bd_net -net clock_reset_clk_usr_0  [get_bd_pins clock_reset/clk_usr_0] \
+  [get_bd_pins user_accel_sc/aclk1] \
+  [get_bd_pins user_accel/s_axi_aclk]
+  connect_bd_net -net clock_reset_resetn_usr_0_periph  [get_bd_pins clock_reset/resetn_usr_0_periph] \
   [get_bd_pins user_accel/s_axi_aresetn]
 
   # Create address segments
