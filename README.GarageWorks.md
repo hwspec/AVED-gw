@@ -7,7 +7,10 @@ Fork of [Xilinx/AVED](https://github.com/Xilinx/AVED) used as the FPGA backend f
 - **SMBus IP removed** (`axi_smbus_rpu`, its IIC port/pins, IRQ, LPD address). AMC builds without it
   (`HAL_SMBUS_FEATURE=0` when `XPAR_SMBUS_0_BASEADDR` is absent); SMBus/BMC are simply not started.
 - **`user_accel`** — RTL module reference `wrapper` on `pcie_slr0_mgmt_sc/M04_AXI`,
-  100 MHz `clk_pl`, **BAR0 + 0x1100000 (1 MB)** — the default `base` of GarageWorks' `AVED_Bridge`.
+  **BAR0 + 0x1100000 (1 MB)** — the default `base` of GarageWorks' `AVED_Bridge`.
+  Runs on `clk_usr_0` (`usr_clk_wiz` clk_out1), 100 MHz by default; set `GW_CLK_MHZ` at build
+  time to change it (e.g. `GW_CLK_MHZ=200 make hw`). SmartConnect `user_accel_sc` does the
+  `clk_pl` → `clk_usr_0` crossing. Check the result with `make timing`.
   Default content is GarageWorks' `Axi4Lite32Cmd` example.
 - `sw/vamp`: VAMP (V80 AMI Minimal Primitives): `libvamp.so` C API, header-only C++ `vamp.hpp`, `pyaved.py`.
 - `sw/AMI/api`: also builds `libami.so`.
