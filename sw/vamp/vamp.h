@@ -31,7 +31,8 @@ int  vamp_read32(vamp_dev *h, uint64_t offset, uint32_t *val);
 int  vamp_write32(vamp_dev *h, uint64_t offset, uint32_t val);
 
 /* Card DDR through BAR0 (DDR LOW0, see create_bd_design.tcl).
- * addr is relative to the window; addr and len must be 4-byte aligned. */
+ * addr is relative to the window; addr and len must be 4-byte aligned.
+ * len == 0 is a no-op. */
 #define VAMP_MEM_BAR_OFFSET  0x8000000ULL
 #define VAMP_MEM_SIZE        (128ULL << 20)
 

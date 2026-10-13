@@ -21,7 +21,7 @@ $(BUILD)/pyaved.py: pyaved.py
 
 # C++ compile check of the header-only wrapper
 check-cxx: $(BUILD)/libvamp.so
-	echo '#include "vamp.hpp"\nint main(){return 0;}' | $(CXX) -std=c++17 -Wall -Werror -I. -I$(AMI_API)/include -x c++ - -L$(BUILD) -lvamp -o $(BUILD)/cxx_check
+	printf '#include "vamp.hpp"\nint main(){return 0;}\n' | $(CXX) -std=c++17 -Wall -Werror -I. -I$(AMI_API)/include -x c++ - -L$(BUILD) -lvamp -o $(BUILD)/cxx_check
 
 clean:
 	rm -rf $(BUILD)

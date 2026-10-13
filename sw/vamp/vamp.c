@@ -79,7 +79,7 @@ int vamp_write32(vamp_dev *h, uint64_t offset, uint32_t val)
 
 static int mem_check(const vamp_dev *h, uint64_t addr, const void *buf, uint64_t len)
 {
-	return h && buf && len && !(addr & 3) && !(len & 3) &&
+	return h && (buf || !len) && !(addr & 3) && !(len & 3) &&
 	       addr <= h->mem_size && len <= h->mem_size - addr;
 }
 

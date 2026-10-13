@@ -77,14 +77,23 @@ public:
 	}
 
 	template <typename T>
-	void mem_read(uint64_t addr, std::vector<T> &v) const { mem_read(addr, v.data(), v.size() * sizeof(T)); }
+	void mem_read(uint64_t addr, std::vector<T> &v) const { mem_read(addr, v.data(), vec_bytes(v)); }
 
 	template <typename T>
-	void mem_write(uint64_t addr, const std::vector<T> &v) { mem_write(addr, v.data(), v.size() * sizeof(T)); }
+	void mem_write(uint64_t addr, const std::vector<T> &v) { mem_write(addr, v.data(), vec_bytes(v)); }
 
 	vamp_dev *handle() const { return h_; }   /* escape hatch for future C APIs */
 
 private:
+	template <typename T>
+	static uint64_t vec_bytes(const std::vector<T> &v)
+	{
+		uint64_t n = v.size() * sizeof(T);
+		if (n & 3)
+			throw std::invalid_argument("vamp: vector size must be a multiple of 4 bytes");
+		return n;
+	}
+
 	vamp_dev *h_ = nullptr;
 };
 

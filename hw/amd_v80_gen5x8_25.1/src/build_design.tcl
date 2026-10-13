@@ -50,6 +50,15 @@ proc do_aved_build {} {
     common::send_msg_id {BUILD_HW-6} {ERROR} "Implementation failed"
   }
 
+  # GarageWorks: timing + resource usage summary report, written next to the
+  # other build outputs (build/reports/summary.rpt)
+  open_run impl_1
+  source "${src_dir}/../scripts/report_summary.tcl"
+  set gw_all_met [rs_write_build_summary "${build_dir}/reports" "impl_1"]
+  if {!$gw_all_met} {
+    common::send_msg_id {BUILD_HW-9} {WARNING} "Timing not met - see ${build_dir}/reports/summary.rpt"
+  }
+
   common::send_msg_id {BUILD_HW-8} {INFO} {Done!}
 }
 
