@@ -82,6 +82,44 @@ public:
 	template <typename T>
 	void mem_write(uint64_t addr, const std::vector<T> &v) { mem_write(addr, v.data(), vec_bytes(v)); }
 
+	/* PL DMA engine. Call dma_init() once before the first transfer. */
+	void dma_init()
+	{
+		if (vamp_dma_init(h_) != VAMP_OK)
+			throw Error("dma_init");
+	}
+
+	void dma_start_mm2s(uint64_t src, uint32_t len)
+	{
+		if (vamp_dma_start_mm2s(h_, src, len) != VAMP_OK)
+			throw Error("dma_start_mm2s");
+	}
+
+	void dma_start_s2mm(uint64_t dst, uint32_t len)
+	{
+		if (vamp_dma_start_s2mm(h_, dst, len) != VAMP_OK)
+			throw Error("dma_start_s2mm");
+	}
+
+	void dma_wait_mm2s()
+	{
+		if (vamp_dma_wait_mm2s(h_) != VAMP_OK)
+			throw Error("dma_wait_mm2s");
+	}
+
+	void dma_wait_s2mm()
+	{
+		if (vamp_dma_wait_s2mm(h_) != VAMP_OK)
+			throw Error("dma_wait_s2mm");
+	}
+
+	/* Starts MM2S and S2MM independently (see vamp_dma_copy); does not wait. */
+	void dma_copy(uint64_t src, uint64_t dst, uint32_t len)
+	{
+		if (vamp_dma_copy(h_, src, dst, len) != VAMP_OK)
+			throw Error("dma_copy");
+	}
+
 	vamp_dev *handle() const { return h_; }   /* escape hatch for future C APIs */
 
 private:
